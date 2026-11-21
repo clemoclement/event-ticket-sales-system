@@ -19,7 +19,7 @@ app.config.update(
     JWT_ACCESS_TOKEN_EXPIRES=timedelta(hours=12))
 CORS(app, origins=os.getenv("CORS_ORIGIN", "*").split(","))
 db.init_app(app); Migrate(app, db); JWTManager(app)
-SERVICE_FEE = int(os.getenv("SERVICE_FEE", 200))
+SERVICE_FEE = int(os.getenv("SERVICE_FEE", 1))  # flat fee per booking
 
 
 def err(msg, code=400): return jsonify({"error": msg}), code
@@ -163,7 +163,9 @@ def mpesa_callback():
     meta = {i["Name"]: i.get("Value") for i in cb.get("CallbackMetadata", {}).get("Item", [])}
     p.mpesa_receipt = meta.get("MpesaReceiptNumber")
     b = p.booking
-    if p.result_code == 0: b.payment_status = "Paid"
+    if p.result_code == 0:
+        b.payment_status = "Paid"
+        b.status = "Confirmed"
     else:  # release held tickets
         b.payment_status = "Failed"
         for i in b.items: i.ticket_type.sold = max(i.ticket_type.sold - i.quantity, 0)
@@ -177,8 +179,10 @@ def simulate_paid(bid):
     if not mpesa.MOCK: return err("Not available", 404)
     b = db.get_or_404(Booking, bid)
     p = b.payments[-1]; p.result_code, p.mpesa_receipt = 0, "MOCK" + str(random.randint(10**6, 10**7))
-    b.payment_status = "Paid"; db.session.commit(); return jsonify(b.to_dict())
-
+    b.payment_status = "Paid"
+    b.status = "Confirmed"
+    db.session.commit()
+    return jsonify(b.to_dict())
 
 @app.get("/api/bookings/mine")
 @jwt_required()
@@ -234,7 +238,7 @@ def seed():
               starts_at=datetime(2026, 12, 19, 14), ends_at=datetime(2026, 12, 19, 23))
     e.tickets = [TicketType(name="General admission", price=2500, capacity=1000, description="Festival entry + all live performances"),
                  TicketType(name="VIP experience", price=5500, capacity=200, description="Priority entry + exclusive viewing area")]
-    db.session.add(e); db.session.commit(); print("Seeded. Admin: admin@tiko.co.ke / admin12345")
+    db.session.add(e); db.session.commit(); print("Seeded. Admin: admin@ticketyangu.co.ke / admin")
 
 
 if __name__ == "__main__":

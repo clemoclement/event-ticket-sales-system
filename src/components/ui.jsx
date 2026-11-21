@@ -26,4 +26,4 @@ export const Summary = ({ lines, subtotal, fee, total }) => (
     <div className="flex justify-between border-t border-line pt-2 text-base font-semibold"><span>Total</span><span>{kes(total)}</span></div></div>);
 import { kes } from "../format.js";
 
-export const SERVICE_FEE = 200; // keep in sync with backend SERVICE_FEE
+export const SERVICE_FEE = 1; // keep in sync with backend SERVICE_FEE

@@ -1,9 +1,13 @@
 import base64, os, uuid
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import requests
 
 MOCK = os.getenv("MPESA_MOCK", "1") == "1"
-BASE = "https://sandbox.safaricom.co.ke"
+ENV = os.getenv("MPESA_ENV", "sandbox")  # sandbox | production
+BASE = ("https://api.safaricom.co.ke" if ENV == "production"
+        else "https://sandbox.safaricom.co.ke")
+TXN_TYPE = os.getenv("MPESA_TXN_TYPE", "CustomerPayBillOnline")  # or CustomerBuyGoodsOnline
 
 
 def normalise_phone(raw: str) -> str:
@@ -17,7 +21,10 @@ def normalise_phone(raw: str) -> str:
 
 def _token():
     r = requests.get(f"{BASE}/oauth/v1/generate?grant_type=client_credentials",
-                     auth=(os.environ["MPESA_CONSUMER_KEY"], os.environ["MPESA_CONSUMER_SECRET"]), timeout=15)
+                     auth=(os.environ["MPESA_CONSUMER_KEY"], os.environ["MPESA_CONSUMER_SECRET"]),
+                     timeout=15)
+    if not r.ok:
+        print("M-Pesa token error:", r.status_code, r.text)
     r.raise_for_status()
     return r.json()["access_token"]
 
@@ -26,15 +33,16 @@ def stk_push(phone: str, amount: int, reference: str) -> str:
     """Returns CheckoutRequestID."""
     if MOCK:
         return "mock-" + uuid.uuid4().hex[:12]
-    ts = datetime.now().strftime("%Y%m%d%H%M%S")
+    ts = datetime.now(ZoneInfo("Africa/Nairobi")).strftime("%Y%m%d%H%M%S")
     shortcode, passkey = os.environ["MPESA_SHORTCODE"], os.environ["MPESA_PASSKEY"]
     body = {"BusinessShortCode": shortcode,
             "Password": base64.b64encode(f"{shortcode}{passkey}{ts}".encode()).decode(),
-            "Timestamp": ts, "TransactionType": "CustomerPayBillOnline", "Amount": amount,
+            "Timestamp": ts, "TransactionType": TXN_TYPE, "Amount": int(amount),
             "PartyA": phone.lstrip("+"), "PartyB": shortcode, "PhoneNumber": phone.lstrip("+"),
             "CallBackURL": os.environ["MPESA_CALLBACK_URL"],
-            "AccountReference": reference, "TransactionDesc": "Tiko tickets"}
+            "AccountReference": reference[:12], "TransactionDesc": "Tiko tickets"}
     r = requests.post(f"{BASE}/mpesa/stkpush/v1/processrequest", json=body,
                       headers={"Authorization": f"Bearer {_token()}"}, timeout=20)
+    print("STK response:", r.status_code, r.text)  # remove once working
     r.raise_for_status()
     return r.json()["CheckoutRequestID"]
