@@ -1,0 +1,168 @@
+.hero-slider {
+  position: relative;
+  width: 100%;
+  height: clamp(320px, 55vh, 560px);
+  overflow: hidden;
+  background: #1c1c1c;
+}
+
+.hero-slider:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: -6px;
+}
+
+.hero-slider__track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.6s ease;
+}
+
+.hero-slider__slide {
+  position: relative;
+  flex: 0 0 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Dark gradient so text stays readable on any image */
+.hero-slider__slide::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.2) 55%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.hero-slider__content {
+  position: relative;
+  max-width: 560px;
+  padding: 0 clamp(20px, 6vw, 72px) clamp(48px, 8vh, 72px);
+  color: #ffffff;
+}
+
+.hero-slider__content h2 {
+  margin: 0 0 8px;
+  font-size: clamp(1.6rem, 4vw, 2.75rem);
+  line-height: 1.1;
+}
+
+.hero-slider__content p {
+  margin: 0 0 20px;
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+}
+
+.hero-slider__cta {
+  display: inline-block;
+  padding: 12px 22px;
+  background: #ffffff;
+  color: #111111;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.hero-slider__cta:hover {
+  background: #e8e8e8;
+}
+
+.hero-slider__cta:focus-visible,
+.hero-slider__arrow:focus-visible,
+.hero-slider__dots button:focus-visible {
+  outline: 3px solid #ffd54a;
+  outline-offset: 2px;
+}
+
+.hero-slider__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.hero-slider__arrow:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.hero-slider__arrow--prev {
+  left: 16px;
+}
+
+.hero-slider__arrow--next {
+  right: 16px;
+}
+
+.hero-slider__dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.hero-slider__dots button {
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.hero-slider__dots button.is-active {
+  background: #ffffff;
+}
+
+@media (max-width: 600px) {
+  .hero-slider__arrow {
+    display: none; /* swipe instead on touch screens */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slider__track {
+    transition: none;
+  }
+}
+
+.hero-slider {
+  border-radius: 24px;          /* matches your hero card */
+  height: clamp(220px, 35vh, 380px);
+  margin: 24px 0;
+}
+
+.hero-slider__slide::before {
+  background: linear-gradient(
+    to top,
+    rgba(90, 40, 40, 0.8) 0%,   /* rose-tinted instead of pure black */
+    rgba(90, 40, 40, 0.15) 60%,
+    rgba(90, 40, 40, 0) 100%
+  );
+}
+
+.hero-slider__cta {
+  border-radius: 999px;         /* pill shape like your buttons */
+  background: #a05f5f;          /* swap in your exact brand color */
+  color: #ffffff;
+}
+
+.hero-slider__cta:hover {
+  background: #8a4f4f;
+}

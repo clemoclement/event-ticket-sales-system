@@ -29,7 +29,7 @@ export default function Cart() {
 
     <div className="flex gap-2">
         <button className="btn-secondary" onClick={() => setCart(null)}>Clear cart</button>
-        <button className="btn-primary flex-1" onClick={() => nav("/checkout")}>Proceed to checkout</button>
+        <button className="btn-primary flex-1" onClick={() => nav("/checkout")}>Proceed to Payment</button>
         </div>
         </div>
         );

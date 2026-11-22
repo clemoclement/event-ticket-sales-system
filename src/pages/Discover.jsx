@@ -17,7 +17,7 @@ return () => clearTimeout(t); }, [q, cat]);
   return (
   <div className="space-y-6">
     <section className="rounded-xl bg-primary p-8 text-white">
-        <h1 className="max-w-md text-5xl font-bold">Make room for unforgettable.</h1>
+        <h3 className="max-w-md text-5xl font-bold">Top Events and things to do</h3>
       <p className="mt-3 max-w-md text-base">Live music, food and a little adventure. Find your next good time, right here.</p>
       <input className="input mt-6 max-w-md text-ink" placeholder="Search events, artists or venues" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search events" />
       </section>
