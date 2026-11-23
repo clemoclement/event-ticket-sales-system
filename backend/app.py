@@ -15,7 +15,9 @@ load_dotenv()
 app = Flask(__name__)
 db_url = os.getenv("DATABASE_URL", "sqlite:///tiko.db")
 if db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql://", 1)
+    db_url = db_url.replace("postgres://", "postgresql+psycopg2://", 1)
+elif db_url.startswith("postgresql://"):
+    db_url = db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
 app.config.update(
     SQLALCHEMY_DATABASE_URI=db_url,
     JWT_SECRET_KEY=os.getenv("JWT_SECRET_KEY", "dev-secret"),
