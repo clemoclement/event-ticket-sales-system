@@ -13,8 +13,11 @@ import mpesa
 
 load_dotenv()
 app = Flask(__name__)
+db_url = os.getenv("DATABASE_URL", "sqlite:///tiko.db")
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
 app.config.update(
-    SQLALCHEMY_DATABASE_URI=os.getenv("DATABASE_URL", "sqlite:///tiko.db").replace("postgres://", "postgresql://"),
+    SQLALCHEMY_DATABASE_URI=db_url,
     JWT_SECRET_KEY=os.getenv("JWT_SECRET_KEY", "dev-secret"),
     JWT_ACCESS_TOKEN_EXPIRES=timedelta(hours=12))
 CORS(app, origins=os.getenv("CORS_ORIGIN", "*").split(","))
@@ -232,7 +235,7 @@ def stats():
 @app.cli.command("seed")
 def seed():
     db.create_all()
-    a = User(name="Admin", email="admin@tiko.co.ke", role="admin"); a.set_password("admin12345"); db.session.add(a)
+    a = User(name="Admin", email="admin@ticketyangu.co.ke", role="admin"); a.set_password("adminlog954"); db.session.add(a)
     e = Event(title="Solstice Fest 2026", category="Music", venue="Uhuru Gardens", organizer="Solstice Collective",
               description="One city. One stage. A thousand good memories.", featured=True,
               starts_at=datetime(2026, 12, 19, 14), ends_at=datetime(2026, 12, 19, 23))
